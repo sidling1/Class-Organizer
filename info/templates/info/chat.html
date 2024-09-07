@@ -1,0 +1,164 @@
+{% extends 'info/base.html' %}
+
+{%block css%}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+    .header {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        text-align: center;
+    }
+    .header h1 {
+        margin: 0;
+    }
+    .header p {
+        margin: 5px 0 0;
+    }
+    .messages {
+        flex: 1;
+        padding: 10px;
+        overflow-y: auto;
+        background-color: #f4f4f4;
+    }
+    .message {
+        margin-bottom: 10px;
+    }
+    .message strong {
+        display: block;
+        margin-bottom: 2px;
+    }
+    .input-container {
+        padding: 10px;
+        background-color: #fff;
+        border-top: 1px solid #ddd;
+    }
+    .input-container input[type="text"] {
+        width: calc(100% - 70px);
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    .input-container button {
+        width: 60px;
+        padding: 8px;
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+</style>
+{%endblock%}
+
+{% block content %}
+    <!-- <h1>List of Classes</h1> -->
+    <div class="header">
+        <h1>{{ group.name }}</h1>
+        <!-- <p>Members: {{ group.members.count }}</p> -->
+    </div>
+    
+    <div id="msg_cont">
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message">
+                    <strong>{{ message.sender.username }}:</strong>
+                    <p>{{ message.message }}</p>
+                </div>
+            {% empty %}
+                <p>No messages yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div>
+        <form id="message-form">
+            {% csrf_token %}
+            <input type="text" name="msg" id="msg" placeholder="write yoour message here ....."></input>
+            <input type="submit">
+        </form>
+    </div>
+
+    <script>
+        // Determine the WebSocket protocol based on the application's URL
+        const websocketProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+        /*
+        Change this to URL we keep in backend
+        */
+        const wsEndpoint = `${websocketProtocol}://${window.location.host}/ws/notification/{{group.course.id}}/`;
+    
+        // Create a new WebSocket connection
+        const socket = new WebSocket(wsEndpoint);
+    
+        // Successful connection event
+        socket.onopen = (event) => {
+            console.log("WebSocket connection opened!");
+        };
+    
+        // Socket disconnect event
+        socket.onclose = (event) => {
+            console.log("WebSocket connection closed!");
+        };
+    
+        // Form submit listener
+        document.getElementById('message-form').addEventListener('submit', function(event){
+            event.preventDefault();
+            const message = document.getElementById('msg').value;
+            socket.send(
+                JSON.stringify({
+                    'message': message,
+                    'course_id': '{{group.course.id}}',
+                    'sender_id': '{{user}}',
+                })
+            );
+        });
+
+        
+    // Response from consumer on the server
+    socket.addEventListener("message", (event) => {
+        const messageData = JSON.parse(event.data)['message'];
+        console.log(messageData);
+
+        var sender = messageData['sender'];
+        var message = messageData['message'];
+        var sender_id = messageData['sender_id']
+
+        // Empty the message input field after the message has been sent
+        if (sender_id == '{{user}}'){
+            document.getElementById('msg').value = '';
+        }
+
+        // Append the message to the chatbox
+        var messageDiv = document.querySelector('.messages');
+        if (sender_id != '{{user}}') { // Assuming you have a variable `currentUser` to hold the current user's name
+            messageDiv.innerHTML += '<div class="receive"><p style="color: #000;">' + message + '<strong>-' + sender + '</strong></p></div>';
+        } else {
+            messageDiv.innerHTML += '<div class="send"><p style="color: #000;">' + message + '</p></div>';
+        }
+        scrollToBottom();
+    });
+
+    function scrollToBottom() {
+        var chatContainer = document.getElementById("msg_cont");
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+
+    </script>
+
+    <!-- <div class="input-container">
+        <form method="post" action="">
+            {% csrf_token %}
+            <input type="text" name="message" placeholder="Type your message..." required>
+            <button type="submit">Send</button>
+        </form>
+    </div> -->
+    
+{% endblock %}

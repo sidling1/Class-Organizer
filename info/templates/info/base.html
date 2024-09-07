@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>{% block title %}{% endblock %}</title>
+      {% load static %}
+
+    <!-- Bootstrap core CSS-->
+    <link href="{% static '/info/bootstrap/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Custom fonts for this template-->
+    <link href="{% static '/info/bootstrap/vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+
+    <!-- Page level plugin CSS-->
+    <link href="{% static '/info/bootstrap/vendor/datatables/dataTables.bootstrap4.css' %}" rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="{% static '/info/bootstrap/css/sb-admin.css' %}" rel="stylesheet">
+
+    <link href="{% static '/info/homepage/css/mystyle.css' %}" rel="stylesheet">
+    <link href="{% static '/info/homepage/css/mystyle2.css' %}" rel="stylesheet">
+
+    <!-- Latest compiled and minified CSS -->
+
+
+      {% block css %}
+      {% endblock %}
+
+  </head>
+
+  <body id="page-top">
+
+    <nav class="navbar navbar-expand navbar-dark navcolor sticky-top">
+
+      <!-- <a class="navbar-brand mr-1" href="{% url 'index' %}">Acadger</a> -->
+      <a href="{% url 'index' %}"><img class="logo" src="{% static 'info/images/logo3.jpeg' %}" alt=""></a>
+
+      <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <!-- Navbar -->
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                
+                {% if request.user.is_student %}
+                    <a class="nav-link text-capitalize">{{ request.user.student.name }}</a>
+                {% elif request.user.is_teacher %}
+                    <a class="nav-link text-capitalize">{{ request.user.teacher.name }}</a>
+                {% endif %}
+            </li>
+            <li class="nav-item">
+              
+                <a class="nav-link" href="#" data-toggle="modal" data-target="#logoutModal">Logout</a>
+            </li>
+          </ul>
+        </div>
+
+    </nav>
+
+    <div id="wrapper">
+
+     
+        <div style="margin-right: 230px;">
+      <div class="sidebar-container">
+        <ul class="sidebar-navigation">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'index' %}">
+              <img class = "sidebar-logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKfucCZevPT_Pn4aglWuxAmY7kXsAT2khKjBjKFPhP6rMEzn6OkrFfvRGKsriAZR_kpU8&usqp=CAU" alt="">
+              <i class="fa fa-home" aria-hidden="true"></i> Homepage
+            </a>
+          </li>
+      {% if request.user.is_student %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'attendance' request.user.student.USN %}">
+              <img class = "sidebar-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAe1BMVEX///8AAADc3NxLS0vo6OgwMDC0tLSGhoaqqqqmpqbh4eF4eHhtbW38/PywsLA4ODjQ0NCAgIBmZmbR0dF6enqZmZnFxcWhoaFVVVUmJiZvb2/IyMheXl4dHR339/ckJCQVFRVERESOjo4sLCwNDQ07Ozu9vb1YWFhFRUWnQzHKAAAFE0lEQVR4nO2da0PaMBSGgyiWIpaLuE0mc5vT/f9fOAsFmuQkBdeT+G7v8zFpGh9PadPmZgwhhBBCCCGEEEIIIYQQQgg869VkWF3pUw0nq3V6vfvFIC2L+6R+xVNiv5qn22R+5VUGv5qqTCP4KZNfzTiF4E1GwcFgoi/4OavgYPBVW/Ahs6B6FHP+BvcUmoIXue22aN5Rcz0mbL7rCY5yuzXoNW++5FZrqLQE73ObHVgqGX51K/o8Wl7qsxwN3YofdASnTjWPWv9Jn5nb0leqxqllo1ONyKVT94VKLc7TPl0Ea9Z25TpP/Yn9G1SpI8wvq/YfKnXYbW7VtpOAfQXptL/tO1rai9R9VOlcQbahzm89jN0kHqrUQUNdaNgHNNSFhn1AQ11o2Ac01IWGfUBDXWjYBzTUhYZ9QENdEA3ljs7QeQENS7FHfjx4kQ/HMywH0qCD8VuqrAhnWG5P4ioW21SxixfNsGzOcmeljptUSRHMsDycpq1YHFIFRSzDsnWeo2LRSvUVoQxL60TzJrWwUj1FJEO3P3eneOukuopAhnYE94qFl+oo4hi64x12im4Ea+w2D46hN+ChRhrS6QyWBTIUFX0+OaWQDE9S9IY75zVcz6/DzGfvUPTHc+c1HA9iCJMIuhSFAet5Df1bfZuRcK64ojQiH80wqihOOYAzjCjKY5HwDIOKgUkjgIYBxdBoMkRDcy0cHPzTEQ3lZ8xd4GhAw1ChgCKeYbiMrAhnGGsGiYpohvES0qdisHZpvIComNfw4nYU5tbvn4hHUFaEej88ZYqfp4hk2HWJyopAhlIEf3Qr4hhOH32ZwiwFxUurHI6h2fz0BY2gaAsiGZqpo7h7m3AV3TswkqHZWDM1969L9suU94iBMjTTluLxfbAdRf8ZimVoNt/2p2m/0R+jKAxiADM8XKj2G/0sLAhn2ETR/SYzCwriGW6j6H+TmYUEAQ3N5tntfKmZhVZMADQ00zNSMQ3Pg4Z9QENdaNgHNNSFhn2Q0PAfeLeIs0T/XtpFLQP9vbSLnQvw99Iu9ip3cnIew3P7LWIcTSaB9ByGZ/c91Ux/ShltkXkoA6H/8E2wknJsj3kwB8CwFvSz3HUZ56Gsj2+4E3Tz/IUnr1EN94J2prSyZiFnfnjD6ph7nOUkCS4CuR/ccFpJ2XFBLEN76bUmih2CSIZ2BPeKXYJAhlNhHdsXYZqJIwhkaKQ+e6lv/8YuBmRoVtGj9yycUlDt0lMUb9xCWPMtuhXdCOY2PJsuRV8QzbBD0btEDZ5hVFGIIKBhRFGKIKJhUFGMIKRhQFGOIKahqBgSxDQUFMOLrWMaeorBCMIaOooRQVhDa8RwdD8AWMNWFGMRRDY8RLFjRwdgw0YxHkFsw61i554c0IZvit2bjmAbmsD6Xm3ADU+Ahn1AQ11o2Ac01IWGfUBDXWjYBzTUhYZ9QENdaNgH/5uh3zuvyyyB4atVR+o9LO3xHq8qdcwT/BfD/LZqn3cXeAfOqJm0l6mzl2xgYb6/xF25Iud+wEq7oDq1/Ht7OpuFU02+fbm7Ojney9qtKBtq9wBv7ZxMXGkJmpfcag0ndHO8F28Acxa+6wmKo7HTc95UsTM5ZTE5bZTbiw+5/cRlI3tFWuQ/JTr7xlvcZBVUj2BNzt+iTovb40KYFJKESvUualE8Z/B7DEy3VeLea4Yrs1gn9duyXk2G1ZU+1fBulfqrECGEEEIIIYQQQgghhBBCiAJ/ALK4Tt0Vtf8OAAAAAElFTkSuQmCC" alt="">
+              <i class="fa fa-tachometer" aria-hidden="true"></i> Attendance
+            </a>
+          </li>
+ 
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'timetable' request.user.student.class_id_id %}">
+              <img class = "sidebar-logo" src="data:image/png;base64,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" alt="">
+              <i class="fa fa-users" aria-hidden="true"></i> TimeTable
+            </a>
+          </li>
+
+          <li class="header">Performance Index</li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'marks_list' request.user.student.USN %}">
+              <img class = "sidebar-logo" src="https://media.istockphoto.com/vectors/web-page-with-stars-feedback-rating-certificate-reward-marks-line-vector-id1140178211" alt="">
+              <i class="fa fa-users" aria-hidden="true"></i> Marks
+            </a>
+          </li>
+          
+ 
+      {% elif request.user.is_teacher %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 't_clas' request.user.teacher.id 1 %}">
+              <img class = "sidebar-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAe1BMVEX///8AAADc3NxLS0vo6OgwMDC0tLSGhoaqqqqmpqbh4eF4eHhtbW38/PywsLA4ODjQ0NCAgIBmZmbR0dF6enqZmZnFxcWhoaFVVVUmJiZvb2/IyMheXl4dHR339/ckJCQVFRVERESOjo4sLCwNDQ07Ozu9vb1YWFhFRUWnQzHKAAAFE0lEQVR4nO2da0PaMBSGgyiWIpaLuE0mc5vT/f9fOAsFmuQkBdeT+G7v8zFpGh9PadPmZgwhhBBCCCGEEEIIIYQQQgg869VkWF3pUw0nq3V6vfvFIC2L+6R+xVNiv5qn22R+5VUGv5qqTCP4KZNfzTiF4E1GwcFgoi/4OavgYPBVW/Ahs6B6FHP+BvcUmoIXue22aN5Rcz0mbL7rCY5yuzXoNW++5FZrqLQE73ObHVgqGX51K/o8Wl7qsxwN3YofdASnTjWPWv9Jn5nb0leqxqllo1ONyKVT94VKLc7TPl0Ea9Z25TpP/Yn9G1SpI8wvq/YfKnXYbW7VtpOAfQXptL/tO1rai9R9VOlcQbahzm89jN0kHqrUQUNdaNgHNNSFhn1AQ11o2Ac01IWGfUBDXWjYBzTUhYZ9QENdEA3ljs7QeQENS7FHfjx4kQ/HMywH0qCD8VuqrAhnWG5P4ioW21SxixfNsGzOcmeljptUSRHMsDycpq1YHFIFRSzDsnWeo2LRSvUVoQxL60TzJrWwUj1FJEO3P3eneOukuopAhnYE94qFl+oo4hi64x12im4Ea+w2D46hN+ChRhrS6QyWBTIUFX0+OaWQDE9S9IY75zVcz6/DzGfvUPTHc+c1HA9iCJMIuhSFAet5Df1bfZuRcK64ojQiH80wqihOOYAzjCjKY5HwDIOKgUkjgIYBxdBoMkRDcy0cHPzTEQ3lZ8xd4GhAw1ChgCKeYbiMrAhnGGsGiYpohvES0qdisHZpvIComNfw4nYU5tbvn4hHUFaEej88ZYqfp4hk2HWJyopAhlIEf3Qr4hhOH32ZwiwFxUurHI6h2fz0BY2gaAsiGZqpo7h7m3AV3TswkqHZWDM1969L9suU94iBMjTTluLxfbAdRf8ZimVoNt/2p2m/0R+jKAxiADM8XKj2G/0sLAhn2ETR/SYzCwriGW6j6H+TmYUEAQ3N5tntfKmZhVZMADQ00zNSMQ3Pg4Z9QENdaNgHNNSFhn2Q0PAfeLeIs0T/XtpFLQP9vbSLnQvw99Iu9ip3cnIew3P7LWIcTSaB9ByGZ/c91Ux/ShltkXkoA6H/8E2wknJsj3kwB8CwFvSz3HUZ56Gsj2+4E3Tz/IUnr1EN94J2prSyZiFnfnjD6ph7nOUkCS4CuR/ccFpJ2XFBLEN76bUmih2CSIZ2BPeKXYJAhlNhHdsXYZqJIwhkaKQ+e6lv/8YuBmRoVtGj9yycUlDt0lMUb9xCWPMtuhXdCOY2PJsuRV8QzbBD0btEDZ5hVFGIIKBhRFGKIKJhUFGMIKRhQFGOIKahqBgSxDQUFMOLrWMaeorBCMIaOooRQVhDa8RwdD8AWMNWFGMRRDY8RLFjRwdgw0YxHkFsw61i554c0IZvit2bjmAbmsD6Xm3ADU+Ahn1AQ11o2Ac01IWGfUBDXWjYBzTUhYZ9QENdaNgH/5uh3zuvyyyB4atVR+o9LO3xHq8qdcwT/BfD/LZqn3cXeAfOqJm0l6mzl2xgYb6/xF25Iud+wEq7oDq1/Ht7OpuFU02+fbm7Ojney9qtKBtq9wBv7ZxMXGkJmpfcag0ndHO8F28Acxa+6wmKo7HTc95UsTM5ZTE5bZTbiw+5/cRlI3tFWuQ/JTr7xlvcZBVUj2BNzt+iTovb40KYFJKESvUualE8Z/B7DEy3VeLea4Yrs1gn9duyXk2G1ZU+1fBulfqrECGEEEIIIYQQQgghhBBCiAJ/ALK4Tt0Vtf8OAAAAAElFTkSuQmCC" alt="">
+              <i class="fa fa-tachometer" aria-hidden="true"></i> Attendance
+            </a>
+          </li>
+ 
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 't_timetable' request.user.teacher.id %}">
+              <img class = "sidebar-logo" src="data:image/png;base64,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" alt"">
+              <i class="fa fa-users" aria-hidden="true"></i> TimeTable
+            </a>
+          </li>         
+          
+          <li class="header">Performance Indexes</li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 't_clas' request.user.teacher.id 2 %}">
+              <img class = "sidebar-logo" src="https://media.istockphoto.com/vectors/web-page-with-stars-feedback-rating-certificate-reward-marks-line-vector-id1140178211" alt="">
+              <i class="fa fa-users" aria-hidden="true"></i> Marks
+            </a>
+          </li>
+          
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 't_clas' request.user.teacher.id 3 %}">
+              <img class = "sidebar-logo" src="https://image.shutterstock.com/image-vector/business-report-icon-audit-analysis-260nw-326850887.jpg" alt="">
+              <i class="fa fa-users" aria-hidden="true"></i> Reports
+            </a>
+          </li>
+      {% endif %}
+        </ul>
+      </div>
+
+    </div>
+
+
+
+
+
+
+        
+      <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+          <!-- Breadcrumbs-->
+ {#          <ol class="breadcrumb">#}
+{#            <li class="breadcrumb-item">#}
+{#              <a href="index.html">Dashboard</a>#}
+{#            </li>#}
+{#            <li class="breadcrumb-item active">Blank Page</li>#}
+{#          </ol>#} 
+
+          <!-- Page Content -->
+            {% block content %}
+            {% endblock %}
+
+        <!-- </div> -->
+        <!-- /.container-fluid -->
+
+        <!-- Sticky Footer -->
+{#        <footer class="sticky-footer">#}
+{#          <div class="container my-auto">#}
+{#            <div class="copyright text-center my-auto">#}
+{#              <span>Copyright © Your Website 2018</span>#}
+{#            </div>#}
+{#          </div>#}
+{#        </footer>#}
+
+      </div>
+      <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+      <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+            <a class="btn btn-primary" href="/accounts/logout">Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="{% static '/info/bootstrap/vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static '/info/bootstrap/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="{% static '/info/bootstrap/vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="{% static '/info/bootstrap/js/sb-admin.min.js' %}"></script>
+
+   {% block scripts %}
+    {% endblock %}
+  </body>
+
+</html>
